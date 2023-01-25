@@ -1,10 +1,12 @@
 <?php
 // https://whmcs.community/topic/296515-hook-to-show-recent-imported-ticket-failures-on-support-tickets-page/
-// version 1.4
+// version 1.5
 
 use Illuminate\Database\Capsule\Manager as Capsule; 
 
 add_hook('AdminSupportTicketPagePreTickets', 1, function($vars) {
+	$adminid = WHMCS\Session::get("adminid");
+	if ($adminid) {
 	
 	$output = "<div id='recently-blocked'><h2>Recently Blocked Messages   <small><i class='far fa-eye'></i> <a href='systemmailimportlog.php' target='_blank'>SEE ALL</a></small></h2>
 		<table id='sortabletbl1' class='datatable' style='width:100%'>
@@ -33,15 +35,16 @@ add_hook('AdminSupportTicketPagePreTickets', 1, function($vars) {
 
 		$output .= "
 		<tr>
-			<td>$date_interval</td><td>$name</td><td><a href='#' onclick=\"window.open('/" . $GLOBALS['customadminpath'] . "/systemmailimportlog.php?display=true&id={$msg->id}','','width=650,height=400,scrollbars=yes');return false\">{$msg->subject}</a></td><td>{$msg->status}</td></tr>";
+			
+		<td>$date_interval</td><td>$name</td><td><a href=\"/{$GLOBALS['customadminpath']}/logs/system-mail-import-log/record/{$msg->id}\"  class=\"open-modal\" data-modal-title=\"Viewing Email Message Log Entry\">{$msg->subject}</a></td><td>{$msg->status}</td></tr>";
 		
 	}
 	
 	return  "$output</table><br /></div>
 	<script>
         jQuery(document).ready(function($){ /* Move to bottom of page */
-        $('#recently-blocked').appendTo('#contentarea > div:first-child');
+        $('#recently-blocked').appendTo('.content');
         });
     </script>";
-	
+	}
 });
